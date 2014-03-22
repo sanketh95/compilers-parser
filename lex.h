@@ -71,6 +71,11 @@
 #define STRING 71
 #define ERR 72
 
+
+#ifndef DOLLAR
+#define DOLLAR -2
+#endif
+
 extern char *yytext;		/* in lex.c			*/
 extern int yyleng;
 extern int yylineno;
