@@ -5,11 +5,13 @@
 #include <algorithm>
 #include "lex.h"
 #include "cstring"
+#include <stdlib.h>
 
 using namespace std;
 #define EPSILON -1
 #define DOLLAR -2
 #define START 0
+
 
 bool hasEpsilon(set<int> set){
 
@@ -18,6 +20,32 @@ bool hasEpsilon(set<int> set){
 
 	return (bool) (it != set.end());
 }
+
+set<int> get_first( vector<set<int> > first_sets,  vector<int> symbols  ){
+	set<int> first_set;
+	int i,j;
+	set<int>::iterator it;
+
+	for(i=0; i < symbols.size() ; i++  ){
+		if(symbols[i] == EPSILON)
+			continue;
+		for(it = first_sets[symbols[i]].begin() ; it != first_sets[symbols[i]].end() ; ++it  ){
+			first_set.insert(*it);
+		}
+		if( !hasEpsilon( first_sets[symbols[i]] ) ){
+			break;
+		}
+		
+	}
+
+	if(first_set.empty()){
+		first_set.insert(EPSILON);
+	}
+
+	return first_set;
+}
+
+
 
 class Rules
 {
@@ -55,8 +83,120 @@ public:
 	}
 
 	/*Return the follow sets for the production rules*/
-	vector<set<int> > follow(){
+// 	To
+// build FOLLOW(X)
+// 1. Add $ to FOLLOW(S) [ If S is the start symbol]
+// 2. If (A → αBβ), then
+// 3. Add everything in FIRST(β) except ε to FOLLOW(B)
+//     If ((A → αBβ and β →* ε) or (A → αB))
+// Add everything in FOLLOW(A) to FOLLOW(B)
 
+	vector<set<int> > follow(vector<set<int> > first_sets){
+		
+		int lnt = rules.size();
+		vector<set<int> > follow_sets(lnt);
+		set<int> follow_set;
+		set<int> first_set;
+	//	vector<int> subset;
+		int i,j,k;
+		int current_symbol;
+		set<int>::iterator it;
+		vector<set<int> > dependencies(lnt);
+		bool flag=1;
+
+		//Step 1
+		follow_sets[0].insert(DOLLAR);
+
+		//Step 2
+		for( i=0; i< rules.size(); i++ ){
+			for( j=0 ; j < rules[i].size(); j++ ){
+				for( k = rules[i][j].size() - 1 ; k >= 0 ; k-- ){
+
+					current_symbol = rules[i][j][k];
+
+					
+
+					//If current symbol is terminal, skip
+					if( current_symbol >= lnt || current_symbol == EPSILON)
+						continue;
+
+					//Add last symbol in the production to dependency list of the lhs symbol
+					if( k  == rules[i][j].size() -1 ){
+						dependencies[i].insert(current_symbol);					
+						continue;
+					}						
+
+					//Subset of production
+					vector<int> subset(rules[i][j].begin() + k+1, rules[i][j].end() );
+					first_set = get_first(first_sets, subset);
+
+					//If first_set has EPSILON , add dependency 
+					if( hasEpsilon(first_set) )
+						dependencies[i].insert(current_symbol);
+
+					//Insert first of subset into follow of current symbol except EPSILON
+					for( it = first_set.begin(); it != first_set.end() ; ++it  ){
+						if(*it == EPSILON)
+							continue;
+						follow_sets[current_symbol].insert(*it);
+					}
+
+				}
+			}
+		}
+
+		cout<<"reached"<<endl;
+		int count =0;
+		//step3
+		while(flag == 1){
+
+			flag = 0;
+
+			for(int i=0; i < dependencies.size(); i++){
+
+				//cout<<"out"<<count<<endl;
+				count++;
+
+				for(it = dependencies[i].begin(); it != dependencies[i].end(); ++it){
+
+					//Add follow_sets[i] to follow_sets[*it]
+
+					//cout<<"in"<<count<<endl;
+					count++;
+
+					int  prevsize,cursize;
+					prevsize = follow_sets[*it].size();
+					
+					for(set<int>::iterator it1 = follow_sets[i].begin(); it1 != follow_sets[i].end(); ++it1){
+
+
+					//	cout<<"in in"<<count<<endl;
+						count++;
+
+						follow_sets[*it].insert(*it1);
+					}
+					cursize = follow_sets[*it].size();
+
+					if(cursize != prevsize)
+						flag = 1;
+
+				}
+			}	
+			
+		}
+		
+
+		cout << "Printing follow set" << endl;
+
+		for( i=0; i < follow_sets.size(); i++ ){
+			cout << i << " : ";
+			for(it = follow_sets[i].begin(); it != follow_sets[i].end() ; ++it ){
+				cout << *it << " " ;
+			}
+			cout << endl;
+		}
+
+		return follow_sets;
 	}
 
 	void pprint(){
@@ -156,31 +296,6 @@ private:
 
 };
 
-set<int> get_first( vector<set<int> > first_sets,  vector<int> symbols  ){
-	set<int> first_set;
-	int i,j;
-	set<int>::iterator it;
-	bool is_in;
-
-	for(i=0; i < symbols.size() ; i++  ){
-		if(symbols[i] == EPSILON)
-			continue;
-
-		for(it = first_sets[symbols[i]].begin() ; it != first_sets[symbols[i]].end() ; ++it  ){
-			first_set.insert(*it);
-		}
-		is_in = (bool)(first_sets[symbols[symbols[i]]].find(EPSILON) != first_sets[symbols[i]].end());
-		if(!is_in){
-			break;
-		}
-	}
-
-	if(first_set.empty()){
-		first_set.insert(EPSILON);
-	}
-
-	return first_set;
-}
 
 
 /*Computes and returns the parse table*/
@@ -189,9 +304,9 @@ compute_parse_table(vector<set<int> > first_sets, vector<set<int> > follow_sets,
 	int lnt = rules.rules.size();
 	int lt = rules.len_terminals;
 	vector<vector<vector<int> > > parse_table(lnt);
-	vector<vector<int> > row(lt);
+	vector<vector<int> > row(lt+1);
 	int i,j,k;
-	set<int> temp;
+
 	set<int>::iterator it;
 
 	for(i=0;i<lnt;i++){
@@ -208,30 +323,59 @@ compute_parse_table(vector<set<int> > first_sets, vector<set<int> > follow_sets,
 		}
 	*/
 
+	cout << "DOing nothing" << endl;
+	int t;
 	for(i=0;i<lnt;i++){
 		for(j=0;j<rules.rules[i].size();j++){
-			temp = get_first(first_sets, rules.rules[i][j]);
+
+			//exit(1);
+
+			set<int> temp = get_first(first_sets, rules.rules[i][j]);
 			//For each production
 			//For each terminal in first_sets(RHS of production)
 			//code here
 			for(it = temp.begin() ; it != temp.end() ; ++it){
-				if ( *it == EPSILON )
+				if ( *it == EPSILON)
 					continue;
+				//cout << "Adding  " << i <<"," << *it << endl;
 				parse_table[i][*it-lnt] = rules.rules[i][j];
 			}
 
 			//If EPSILON is in first_sets(RHS of production)
 			//for each terminal including $ in follow_sets[i]
-			if( (bool)( temp.find(EPSILON) != temp.end() ) ){
+			if( hasEpsilon(temp) ){
+				//cout << "Adding follow of " << i << endl;
 				for(it = follow_sets[i].begin() ; it != follow_sets[i].end();  ++it){
-					parse_table[i][*it - lnt] = rules.rules[i][j];
+
+					//cout << "Adding symbol " << *it << endl;
+					if( *it == DOLLAR )
+						parse_table[i][lt] = rules.rules[i][j];
+					else
+						parse_table[i][*it-lnt] = rules.rules[i][j];
 				}
 			}
 		}
 
 
+
 	}
 
+
+			cout << "The parse table is " << endl;
+
+		for (int i = 0; i < parse_table.size(); ++i)
+		{
+			for (int j = 0; j < parse_table[i].size(); ++j)
+			{
+				for (int k = 0; k < parse_table[i][j].size(); ++k)
+				{
+					cout << parse_table[i][j][k] << " ";
+				}
+
+				cout << " | ";
+			}
+			cout << "\n";
+		}
 
 	return parse_table;
 
@@ -251,6 +395,114 @@ int getIndex(string value, vector<string> strings){
 	return -1;
 }
 
+
+
+
+bool parse( vector<vector<vector<int> > > parse_table ){
+	vector<int> stack;
+	int token;
+	int lnt = parse_table.size();
+	int stack_top, k, symbol_to_push;
+	bool error = false;
+
+	stack.push_back(DOLLAR);
+	stack.push_back(START);
+
+	token = lex();
+	if(token == DOLLAR)
+		token = parse_table[0].size()-1;
+	else
+		token = token - lnt;
+
+	cout << "The current token is " << token << endl;
+	cout << "The stacktop is " << stack_top << endl;
+
+	while(1){
+
+		//token = lex();
+
+		stack_top = stack[stack.size() - 1];
+
+
+
+		if(stack_top == DOLLAR){
+			//DOLLAR  = parse_table[0].size()-1
+			//Checking if token is dollar
+			if(token == parse_table[0].size()-1){
+
+				break;
+			}
+			error = true;
+			cout << "1" << endl;
+			break;
+		}
+
+
+		
+		if(stack_top >= lnt ){
+
+			if(token == parse_table[0].size()-1){
+				error = true;
+				cout << "STACKTOP " << stack_top << endl;
+				cout << "2" << endl;
+				break;
+			}
+
+			if(stack_top == token + lnt){
+
+				cout << "Popping terminal " << stack_top << endl;
+
+
+				stack.pop_back();
+				token = lex();
+
+				//cout << "The token is " << token << endl
+				
+
+				if(token == DOLLAR)
+					token = parse_table[0].size()-1;
+				else
+					token = token - lnt;
+				continue;
+			}
+			else{
+				cout << "3" << endl;
+				error = true;
+				break;
+			}
+		}
+
+
+		if(parse_table[stack_top][token].size() != 0){
+			cout << "popping " << stack_top << endl;
+			stack.pop_back();
+			if(parse_table[stack_top][token][0] == EPSILON){
+				continue;
+			}
+
+			for( k=parse_table[stack_top][token].size()-1; k>=0; k-- ){
+				symbol_to_push = parse_table[stack_top][token][k];
+				cout << "Pushing " << symbol_to_push << endl;
+				stack.push_back(symbol_to_push);
+			}
+		}
+		else{
+			cout << "4" << endl;
+			error = true;
+			break;
+		}
+
+		cout << "\nThe current token is " << token << endl;
+		cout << "The stacktop is " << stack_top << endl;
+	}
+
+	if(error){
+		cout << "Syntax Error" << endl;
+	}
+
+	else cout << "Successful !" << endl;
+
+}
 
 
 int main()
@@ -421,6 +673,8 @@ int main()
 		cout << i+j << " : " << terminals[i] << endl;	
 
 	vector<set<int> > first_sets;
+	vector<set<int> > follow_sets;
+	vector<vector<vector<int> > >  parse_table;
 
 	Rules r = Rules(rules, terminals.size());
 	r.pprint();
@@ -436,6 +690,13 @@ int main()
 			cout << *s <<" ";
 		cout << endl;
 	}
+
+	follow_sets = r.follow(first_sets);
+	//cout << "b" << endl;
+	//Call compute_parse_table
+
+	parse_table = compute_parse_table(first_sets, follow_sets, r);
+	parse(parse_table);
 
 }
 

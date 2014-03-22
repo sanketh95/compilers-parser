@@ -1,5 +1,5 @@
-Ex : T Exp
-Exp : + T Exp | E
-T : F Tp 
-Tp : * F Tp | E
-F : ( Ex ) | id
+S : T S'
+S' : + T S' | E
+T : F T'
+T' : * F T' | E
+F : ( S ) | id
