@@ -1,12 +1,7 @@
+<<<<<<< HEAD
 
-#include <cstdio>
-
-int main()
-{
-	printf("%d",1.0/3.0);
-	return 0;
-}
 =======
+>>>>>>> upstream/master
 #include <iostream>
 #include <vector>
 #include <set>
@@ -158,6 +153,9 @@ int main(){
 	r.first();
 
 }
+<<<<<<< HEAD
 
 
+>>>>>>> upstream/master
+=======
 >>>>>>> upstream/master
