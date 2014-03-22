@@ -456,8 +456,11 @@ bool parse( vector<vector<vector<int> > > parse_table ){
 				stack.pop_back();
 				token = lex();
 
-				//cout << "The token is " << token << endl
-				
+				cout << "The token is " << token << endl;
+				if(token != DOLLAR && token > parse_table[0].size() - 1 + lnt ){
+					error = true;
+					break;
+				}
 
 				if(token == DOLLAR)
 					token = parse_table[0].size()-1;

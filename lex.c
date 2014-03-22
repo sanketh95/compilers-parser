@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <string.h>
 
+int find_keyword();
 
 char* yytext = ""; /* Lexeme (not '\0'
                       terminated)              */
@@ -48,113 +49,115 @@ int lex(void){
          yytext = current;
          yyleng = 1;
          switch( *current ){
+           case '$':
+            return DOLLAR; 
            case ',':
-            add(COMMA);
+            //add(COMMA);
             return COMMA;
            case '=':
         //    printf("ASSIGN\n");
             if(*(current+1) == '='){
                 yyleng=2;
-                add(EQUALS);
+                //add(EQUALS);
                 return EQUALS;
             }
-            add(ASSIGN);
+            //add(ASSIGN);
             return ASSIGN;
            case '<':
          //   printf("LT\n");
             if(*(current+1) == '='){
                 yyleng=2;
-                add(LTE);
+                //add(LTE);
                 return LTE;
             }
-            add(LT);
+            //add(LT);
             return LT;
            case '>':
          //   printf("GT\n");
             if(*(current+1) == '='){
                 yyleng=2;
-                add(GTE);
+                ////add(GTE);
                 return GTE;
             }
-            add(GT);
+            //add(GT);
             return GT;
            case ';':
          //   printf("semi colon\n");
-           add(SEMI);
+           //add(SEMI);
             return SEMI;
            case '+':
          //  printf("plus\n");
             if(*(current+1) == '+'){
               yyleng=2;
-              add(PP);
+              //add(PP);
               return PP;
             }
             else if(*(current+1) == '='){
               yyleng=2;
-              add(PE);
+              //add(PE);
               return PE;
             }
-            add(PLUS);
+            //add(PLUS);
             return PLUS;
            case '-':
               if(*(current+1) == '-'){
                 yyleng=2;
-                add(MM);
+                //add(MM);
                 return MM;
               }
             else if(*(current+1) == '='){
               yyleng=2;
-              add(ME);
+              //add(ME);
               return ME;
             }
             else if(*(current+1) == '>'){
               yyleng=2;
-              add(RF);
+              //add(RF);
               return RF;
             }
          //  printf("minus\n");
-            add(MINUS);
+            //add(MINUS);
             return MINUS;
            case '*':
             if(*(current+1) == '='){
               yyleng=2;
-              add(TE);
+              //add(TE);
               return TE;
             }
          //  printf("mul\n");
-            add(TIMES);
+            //add(TIMES);
             return TIMES;
            case '/':
          //  printf("div\n");
             if(*(current+1) == '='){
               yyleng=2;
-              add(DE);
+              //add(DE);
               return DE;
             }
-            add(DIV);
+            //add(DIV);
             return DIV;
            case '(':
          //   printf("lp\n");
-            add(LP);
+            //add(LP);
             return LP;
            case ')':
          //   printf("rp\n");
-            add(RP);
+            //add(RP);
             return RP;
            case '{':
-           add(LF);
+           //add(LF);
             return LF;
            case '}':
-            add(RF);
+            //add(RF);
             return RF;
            case '[':
-            add(LS);
+            //add(LS);
             return LS;
            case ']':
-            add(RS);
+            //add(RS);
             return RS;
            case '\"':
-           // add(DQ); 
+           // //add(DQ); 
             while(*(++current) != '\"'){
               if(*current == '\n' || !(*current)){
                 yytext=current;
@@ -164,7 +167,7 @@ int lex(void){
             }
             yytext++;
             yyleng = current-yytext;
-            add(STRING);
+            //add(STRING);
             yytext = current;
             yyleng=1;
             return STRING;
@@ -172,7 +175,7 @@ int lex(void){
             if(*(current+2) == '\''){
               yyleng=1;
               yytext++;
-              add(CHARACTER);
+              //add(CHARACTER);
               yytext=current+2;
               yyleng=1;
               return CHARACTER;
@@ -187,39 +190,41 @@ int lex(void){
            case '%':
             if(*(current+1) == '='){
               yyleng=2;
-              add(MODEQ);
+              //add(MODEQ);
               return MODEQ;
             }
-            add(MOD);
+            //add(MOD);
             return MOD;
            case '&':
             if(*(current+1) == '&'){
               yyleng=2;
-              add(AND);
+              //add(AND);
               return AND;
             }
            case '|':
             if(*(current+1) == '|'){
               yyleng=2;
-              add(OR);
+              //add(OR);
               return OR;
             }
            case '!':
-            add(NOT);
+            //add(NOT);
             return NOT;
            case '.':
-            add(DOT);
+            //add(DOT);
             return DOT;
            case '\\':
-            add(BS);
+            //add(BS);
             return BS;
            case '\n':
            case '\t':
            case ' ' :
             break;
            default:
-            if(!isalnum(*current) && *current!='#')
+            if(!isalnum(*current) && *current!='#'){
                fprintf(stderr, "Invalid char %c at line: %d\n", *current, yylineno);
+               exit(1);
+             }
             else{               
 
               if(*current == '#')
@@ -242,17 +247,19 @@ int lex(void){
                yyleng = current - yytext;
                if(invalid_num){
                   printf("Invalid Lexeme at line: %d\n", yylineno);
+                  exit(0);
                   return ERR;
+                  
                 }
                else
                   if(first_char_is_digit){
-                      add(NUM);
+                      //add(NUM);
                       return NUM;
                     }
                   else{
                       //printf("%0.*s\n",yyleng, yytext );
                       tc = find_keyword();
-                      add(tc);
+                      //add(tc);
                       return tc;
                   }
             }
@@ -370,13 +377,13 @@ int find_keyword(){
 }
 
 
-void add(int tc){
-  char *temp;
-  int i;
-  temp = (char *) malloc(sizeof(char) * (yyleng+1));
-  temp[yyleng]='\0';
-  for(i=0;i<yyleng;i++){
-    temp[i]=yytext[i];
-  }
-    add_to_table_no_check(temp, tc);
-}
+// void add(int tc){
+//   char *temp;
+//   int i;
+//   temp = (char *) malloc(sizeof(char) * (yyleng+1));
+//   temp[yyleng]='\0';
+//   for(i=0;i<yyleng;i++){
+//     temp[i]=yytext[i];
+//   }
+//     add_to_table_no_check(temp, tc);
+// }
