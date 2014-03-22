@@ -5,7 +5,7 @@ int main()
 	i = j ;
 	for ( i = 1; i < 10; i = i + 1 )
 	{
-		j = j * 2;
+		j= j * 2;
 	}
 }
 $

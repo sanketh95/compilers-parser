@@ -64,21 +64,14 @@ extern int yydebug;
      BREAK = 273,
      CONTINUE = 274,
      EQUALSCHECK = 275,
-     NUMBER = 276
+     NUMBER = 276,
+     END = 277
    };
 #endif
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef union YYSTYPE
-{
-/* Line 2058 of yacc.c  */
-#line 8 "cparser.y"
- char* id; 
-
-/* Line 2058 of yacc.c  */
-#line 81 "cparser.tab.h"
-} YYSTYPE;
+typedef int YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

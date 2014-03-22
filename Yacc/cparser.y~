@@ -122,7 +122,6 @@ casestmt : ws CASE ws expr ws ':' ws code ws casestmt ws {printf("57\n");}
 condition : '<' {printf("59\n");}
 	  | '>' {printf("60\n");}
 	  | EQUALSCHECK {printf("61\n");}
-;
 %%
 main( int argc, char *argv[] )
 {
