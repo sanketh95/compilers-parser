@@ -1,0 +1,5 @@
+Ex : T Exp
+Exp : + T Exp | E
+T : F Tp 
+Tp : * F Tp | E
+F : ( Ex ) | id
