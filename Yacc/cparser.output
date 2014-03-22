@@ -1,0 +1,98 @@
+Terminals unused in grammar
+
+   IDENT
+   IF
+   TMAIN
+   ELSE
+   WHILE
+   SWITCH
+   CASE
+   INT
+   FLOAT
+   DOUBLE
+   LONG
+   SHORT
+   CHAR
+   DO
+   BREAK
+   CONTINUE
+   EQUALSCHECK
+   NUMBER
+   '-'
+   '+'
+   '*'
+   '/'
+
+
+Grammar
+
+    0 $accept: mainstmt $end
+
+    1 mainstmt: FOR
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+'*' (42)
+'+' (43)
+'-' (45)
+'/' (47)
+error (256)
+IDENT (258)
+IF (259)
+TMAIN (260)
+ELSE (261)
+WHILE (262)
+SWITCH (263)
+CASE (264)
+INT (265)
+FLOAT (266)
+DOUBLE (267)
+LONG (268)
+SHORT (269)
+CHAR (270)
+FOR (271) 1
+DO (272)
+BREAK (273)
+CONTINUE (274)
+EQUALSCHECK (275)
+NUMBER (276)
+
+
+Nonterminals, with rules where they appear
+
+$accept (26)
+    on left: 0
+mainstmt (27)
+    on left: 1, on right: 0
+
+
+State 0
+
+    0 $accept: . mainstmt $end
+
+    FOR  shift, and go to state 1
+
+    mainstmt  go to state 2
+
+
+State 1
+
+    1 mainstmt: FOR .
+
+    $default  reduce using rule 1 (mainstmt)
+
+
+State 2
+
+    0 $accept: mainstmt . $end
+
+    $end  shift, and go to state 3
+
+
+State 3
+
+    0 $accept: mainstmt $end .
+
+    $default  accept

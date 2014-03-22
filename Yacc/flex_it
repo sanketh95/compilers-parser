@@ -1,0 +1,73 @@
+%{
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "cparser.tab.h"
+yyerror (char *);
+%}
+%option noyywrap
+%%
+[0-9]+	            {
+                         //printf( "An integer: %s (%d)\n", yytext,atoi( yytext ) );
+                         return NUMBER;
+         			}
+
+[0-9]+("."[0-9]+)(E("\+"|"-")?[0-9]+)?             {
+                        //printf( "A float: %s (%g)\n", yytext, atof( yytext ) );
+                        return NUMBER;
+                    }
+
+"if"                {return IF;}
+"else"              {return ELSE;}
+"break"             {return BREAK;}
+"case"              {return CASE;}
+"char"              {return CHAR;}
+"continue"          {return CONTINUE;}
+"do"                {return DO;}
+"while"             {return WHILE;}
+"float"             {return FLOAT;}
+"for"               {return FOR;}              
+"int"               {return INT;}
+"long"              {return LONG;}
+"short"             {return SHORT;}
+"switch"	        {return SWITCH;}
+"main"              {return TMAIN;}
+
+[a-zA-Z][a-zA-Z0-9]*	            {
+                        yylval.id = (char *) strdup(yytext);
+                        return(IDENT);
+                    }
+
+"=="        {return EQUALSCHECK;}
+"+"         {return *yytext;}                 
+"-"         {return *yytext;}
+"*"         {return *yytext;}
+"/"         {return *yytext;}
+">"         {return *yytext;}
+"<"         {return *yytext;}
+"="         {return *yytext;}
+
+";"		    {return *yytext;}
+","		    {return *yytext;}
+":"         {return *yytext;}
+
+"\{"		{return *yytext;}
+"\}"		{return *yytext;}
+"\("		{return *yytext;}
+"\)"		{return *yytext;}
+"\'"		{return *yytext;}
+"\""		{return *yytext;}
+[ \n\t]		{return *yytext;}		/* eat up whitespace */	
+
+
+
+.			{
+                char msg[25];
+                sprintf(msg,"%s <%s>","invalid character",yytext);
+                yyerror(msg);
+            }
+
+
+
+%%
+     
