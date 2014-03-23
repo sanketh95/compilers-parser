@@ -1,0 +1,40 @@
+estmt: ws '=' ws expr ws ';' ws stmt ws {printf("11\n");}
+
+
+expr : ws expr ws '-' ws sum ws {printf("12\n");}
+	 | ws sum ws {printf("13\n");}
+;
+sum : ws sum ws '+' ws product ws {printf("14\n");}
+	| ws product ws {printf("15\n");}
+;
+product : ws product ws '*' ws fraction ws {printf("16\n");} 
+		| ws fraction ws {printf("17\n");}
+;
+fraction : ws fraction ws '/' ws lessthan ws {printf("18\n");} 
+		 | ws lessthan ws {printf("19\n");}
+;
+lessthan : ws lessthan ws '<' ws equals ws {printf("20\n");} 
+		 | ws equals ws {printf("21\n");}
+;
+equals : ws equals ws EQUALSCHECK ws greaterthan ws {printf("22\n");}
+	   | ws greaterthan ws {printf("23\n");}
+;
+greaterthan : ws greaterthan ws '>' ws factor ws {printf("24\n");} 
+			| ws factor ws {printf("25\n");}
+;
+factor : ws NUMBER ws {printf("26\n");}
+	   | ws '(' ws expr ws ')' ws {printf("27\n");}
+	   | ws IDENT ws {printf("28\n");}
+;
+
+exp : exp1 exp2
+exp1 :Number|Ident
+
+expr 	: 	ws sum1 ws exp2 ws {printf("85\n");}
+;
+exp2	:	ws '-' ws sum1 ws exp2 ws {printf("86\n");}
+	    | epsilon {printf("87\n");}
+ ;
+sum1	: 	ws NUMBER ws {printf("85\n");}
+		| ws '(' ws expr ws ')' ws {printf("89\n");}
+		;

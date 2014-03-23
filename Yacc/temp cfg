@@ -1,36 +1,4 @@
-%{
-	#include <stdio.h>
-	#include <stdlib.h>
-	int yylex(void);
-
-%}
-%start mainstmt
-%union { char* id; }
-%token <id> IDENT /* Simple identifier */
-%token IF
-%token ELSE
-%token WHILE
-%token SWITCH
-%token CASE
-%token INT
-%token FLOAT
-%token DOUBLE
-%token LONG
-%token SHORT
-%token CHAR
-%token FOR
-%token DO
-%token BREAK
-%token CONTINUE
-%token EQUALSCHECK
-%token NUMBER
-%left ’-’ ’+’
-%left ’*’ ’/’
-
-
-%%
-
-mainstmt : ws INT ws main ws '(' ws ')' ws '{' ws code ws '}' ws
+mainstmt : ws INT ws TMAIN ws '(' ws ')' ws '{' ws code ws '}' ws
 
 ws : '\n' | '\t' | ' '| epsilon
 
@@ -62,7 +30,7 @@ declaration : ws INT ws IDENT ws estmt ws | ws FLOAT ws IDENT ws estmt ws | ws C
 
 initialisation : ws IDENT ws '=' ws expr ws ';' ws | epsilon
 
-stmts : ws declaration ws stmts ws | ws iniitialisation ws stmts ws | ws ifelsestmt ws  stmts ws | ws whilestmt ws  stmts ws | ws dowhilestmt ws  stmts ws | ws forstmt ws  stmts ws | ws switchstmt ws stmts ws | ws epsilon ws
+stmts : ws declaration ws stmts ws | ws initialisation ws stmts ws | ws ifelsestmt ws  stmts ws | ws whilestmt ws  stmts ws | ws dowhilestmt ws  stmts ws | ws forstmt ws  stmts ws | ws switchstmt ws stmts ws | ws epsilon ws
 
 ifelsestmt : ws ifstmt ws elseifstmt ws elsestmt ws
 
@@ -82,20 +50,4 @@ forstmt : ws FOR ws '(' ws initialisation ws ';' ws expr ws ';' ws expr ws ')' w
 
 switchstmt : ws SWITCH ws '(' ws expr ws ')' ws '{' ws casestmt ws '}' ws
 
-casestmt : ws CASE ws expr ws ':' ws code ws casestmt ws | epsilon | ws 'default' ws ':' ws code ws
-
-%%
-void main( int argc, char *argv[] )
-{ 
-	extern FILE *yyin;
-	++argv; −−argc;
-	yyin = fopen( argv[0], ”r” );
-	yydebug = 1;
-	errors = 0;
-	yyparse ();
-}
-
-void yyerror (char *s) /* Called by yyparse on error */
-{
-	printf (”Error:	%s\n”, s);
-}
+casestmt : ws CASE ws expr ws ':' ws code ws casestmt ws | epsilon 

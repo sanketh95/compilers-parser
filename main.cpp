@@ -702,5 +702,3 @@ int main()
 	parse(parse_table);
 
 }
-
-

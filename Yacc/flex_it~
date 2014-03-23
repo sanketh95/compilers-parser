@@ -1,0 +1,74 @@
+%{
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "cparser.tab.h"
+yyerror (char *);
+%}
+%%
+[0-9]+	            {
+                         //printf( "An integer: %s (%d)\n", yytext,atoi( yytext ) );
+			 printf("number\n");
+                         return NUMBER;
+         			}
+
+[0-9]+("."[0-9]+)(E("\+"|"-")?[0-9]+)?             {
+                        //printf( "A float: %s (%g)\n", yytext, atof( yytext ) );
+			printf("number\n");
+                        return NUMBER;
+                    }
+
+"if"                {printf("if\n");return IF;}
+"else"              {printf("else\n");return ELSE;}
+"break"             {printf("break\n");return BREAK;}
+"case"              {printf("case\n");return CASE;}
+"char"              {printf("char\n");return CHAR;}
+"continue"          {printf("continue\n");return CONTINUE;}
+"do"                {printf("do\n");return DO;}
+"while"             {printf("while\n");return WHILE;}
+"float"             {printf("float\n");return FLOAT;}
+"for"               {printf("for\n");return FOR;}              
+"int"               {printf("int\n");return INT;}
+"long"              {printf("long\n");return LONG;}
+"short"             {printf("short\n");return SHORT;}
+"switch"	        {printf("switch\n");return SWITCH;}
+"main"              {printf("main\n");return TMAIN;}
+"$"                  {printf("dollar\n");return END;}
+[a-zA-Z][a-zA-Z0-9]*	{printf("id\n");
+                        //yylval.id = (char *) strdup(yytext);
+                        return(IDENT);
+                    }
+
+"=="        {printf("equalscheck\n");return EQUALSCHECK;}
+"+"         {printf("plus\n");return *yytext;}                 
+"-"         {printf("minus\n");return *yytext;}
+"*"         {printf("mul\n");return *yytext;}
+"/"         {printf("div\n");return *yytext;}
+">"         {printf("GT\n");return *yytext;}
+"<"         {printf("LT\n");return *yytext;}
+"="         {printf("EQU\n");return *yytext;}
+
+";"		    {printf("semicolon\n");return *yytext;}
+","		    {return *yytext;}
+":"         {return *yytext;}
+
+"\{"		{printf("OCurly\n");return *yytext;}
+"\}"		{printf("CCurly\n");return *yytext;}
+"\("		{printf("Obrackets\n");return *yytext;}
+"\)"		{printf("Cbrackets\n");return *yytext;}
+"\'"		{return *yytext;}
+"\""		{return *yytext;}
+[ \n\t]		{printf("WS\n");return *yytext;}		/* eat up whitespace */	
+
+
+
+.			{
+                char msg[25];
+                sprintf(msg,"%s <%s>","invalid character",yytext);
+                yyerror(msg);
+            }
+
+
+
+%%
+     

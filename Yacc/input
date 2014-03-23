@@ -1,0 +1,90 @@
+int main () 
+{ 
+	int abc;			//declaration
+	int i;
+	int ijk;
+	int i = 1 ; 		//initialisation
+	float j = 2.0;
+	abc = 1 + 2 ;		//harsha did this
+
+	a = 1 + 2 * 3 / 4 ;	//normal expression
+
+	if ( a < 1 + 2 )	//if with else if and else
+	{
+		abc = 1 + 2 ;
+
+		a = 1 + 2 * 3 / 4 ;
+	} 
+	else if ( b < i )
+	{
+		abc = 1 + 2 ;
+
+		a = 1 + 2 ;
+	}
+
+	else if ( j < i )
+	{
+		abc = 1 + 2 ;
+
+		a = 1 + 2 ;
+	}
+	else
+	{
+		abc = 1 + 2 ;
+
+		a = 1 + 2 ;
+	}
+
+	while ( i < 2 ) 			//while
+	{
+		 abc = 1 ;
+		 x = y < 2 ;
+		 if ( 1 + 2 )
+		 {
+			abc = 1.0 + 2.0 ;
+
+			a = 1 + 2 * 3 / 4 ;
+		 } 
+		 else
+		 {
+			abc = 1 + 2 ;
+
+			a = 1 + 2 ; 
+		 }
+	} 
+	for ( i = 1 ; i < 10 ; i = i + 1)		//for
+	{
+		ijk = 1 * 2 ;
+
+		a = 1 + 2 ; 
+
+		j = 1 ;
+
+	}
+
+	for ( ; i < 10 ;)
+	{
+		ijk = 1 * 2 ;
+
+		a = 1 + 2 ; 
+
+		j = 1 ;
+
+
+
+	}
+	switch ( a )			//switch case
+	{
+		case 1 : 
+			b = b + 2;
+			j = 1 + a ;
+			break ;
+		case 2 :
+			k = k + 1;
+			break;
+		default :
+			j = 1 ;
+	}
+}
+$
+
