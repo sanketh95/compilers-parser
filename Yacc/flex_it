@@ -47,6 +47,8 @@ yyerror (char *);
 ">"         {printf("GT\n");return *yytext;}
 "<"         {printf("LT\n");return *yytext;}
 "="         {printf("EQU\n");return *yytext;}
+"<="        {printf("LE\n");return *yytext;}
+">="        {printf("GE\n");return *yytext;}
 
 ";"		    {printf("semicolon\n");return *yytext;}
 ","		    {return *yytext;}

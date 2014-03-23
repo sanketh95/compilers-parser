@@ -65,7 +65,9 @@ extern int yydebug;
      CONTINUE = 274,
      EQUALSCHECK = 275,
      NUMBER = 276,
-     END = 277
+     END = 277,
+     GE = 278,
+     LE = 279
    };
 #endif
 
